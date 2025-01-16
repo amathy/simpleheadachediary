@@ -1,0 +1,33 @@
+Please create a vanilla html/js page to do a headache diary. Make it look neat in black and white. The diary uses local storage to save the data.
+
+Make the diary resize so that it always fits within a single browser screen.
+The diary looks as follows:
+There is bar at the top, the function bar.
+
+the function bar is layed out as follows:
+at the left, in big attractive font, the current year. On loading, it should dynamically query what the year is. then there are two buttons "<<" and ">>" which decrement and increment the year respectively. Then there is a label saying "3 month summary:". then there follow 3 data fields which dynamically change to reflect data "headache days:" HTOT "migraine days:" MTOT "painkillers days:" PTOT.  Then there is some space and a "print summary" which prints the current page as a pdf in landscape format.
+
+the 3 data fields summarise data from the 90 days preceding the current date (which the app should get dynamically). Note that the previous 90 days may wrap around to the previous year, so the app should deal with this.
+HTOT is the total number of days over the preceding 90 days where the entry is either an "M" or an "H"
+MTOT is the total number of days over the preceding 90 days where the entry is an "M"
+PTOT is the total number of days over the preceding 90 days where there is an "x" indicating a painkiller was taken
+ 
+
+Below the function bar there is then a table representing the diary. The table should fit within one screen.
+The diary has a row for each month (jan-dec - please use 3 letters to display month) and a column for each day (1-31). Each cell is an diary entry. All the cells have exactly the same size. Please make sure the cell size is completely fixed and does not change even when the data is changed.
+
+A diary entry consists of 3 centred rows:
+row 1: M (which means "migraine") or H (which means " headache") or left empty if there was no headache
+row 2: "mild", "mod", "sev" indicating the severity of the headache. empty if there was no headache
+row 3: an "x" if a painkiller was taken, or empty if there was no headache.
+
+When clicking on the diary entry, it opens the "cell change modal"
+
+The "cell change modal" is an interface to change the value of the diary entry selected.
+At the top of the modal is the date of the selected sell and a button to close the modal.
+
+The modal again has three rows:
+row 1: A label "did you have a: " followed by a "migraine" and a "headache" button. Pressing the "migraine" button stores an "M" for the diary entry , the "headache" button stores an "H"
+row 2: A label "severity" followed by a "mild", a "moderate" and a "severe" button, they store "mild", "mod","sev" respectively
+row 3:a label "treatment" a "did you take a painkiller or triptan" button. Stores an "x" if pressed.
+The buttons in this modal are like toggles, i.e. when pressed they stay pressed, and the next click unpresses them. For rows 1 and 2 the buttons are mutually exclusive, i.e. pressing one button unpresses the other. Make the buttons look pretty and rounded.
