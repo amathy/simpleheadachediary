@@ -64,36 +64,52 @@
             font-weight: bold;
         }
 
+        :root {
+            --primary-blue: #E6F3FF;
+            --secondary-blue: #B3D9FF;
+            --primary-purple: #E6E6FA;
+            --secondary-purple: #9370DB;
+            --light-grey: #F5F5F5;
+            --dark-grey: #666666;
+            --highlight: #E6E6FA;
+        }
+
         button {
             padding: 8px 16px;
             border: 2px solid var(--secondary-purple);
             border-radius: 20px;
-            background-color: white;
+            background-color: #FFFFFF;
             color: var(--dark-grey);
             cursor: pointer;
-            transition: none;
             font-weight: 500;
             outline: none;
+            position: relative;
+            overflow: hidden;
         }
 
-        button:not(.button-pressed):hover {
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-color: var(--primary-purple);
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .button-pressed {
+        button:hover::after {
+            opacity: 1;
+        }
+
+        button.button-pressed {
             background-color: var(--secondary-purple);
             color: white;
         }
 
-        /* Override hover state when pressed */
-        .button-pressed:hover {
-            background-color: var(--secondary-purple);
-            color: white;
-        }
-
-        /* Ensure clean white background when not pressed */
-        button:not(.button-pressed) {
-            background-color: white;
+        button.button-pressed::after {
+            display: none;
         }
 
         .month-table {
