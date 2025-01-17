@@ -331,26 +331,34 @@
         function openCellModal(date) {
             selectedDate = date;
             document.getElementById('modalDate').textContent = new Date(date).toLocaleDateString();
-            document.getElementById('cellModal').style.display = 'block';
             
-            // Reset button states
-            const buttons = document.querySelectorAll('#cellModal button');
-            buttons.forEach(button => button.classList.remove('button-pressed'));
+            // Get all buttons
+            const migraineBtn = document.querySelector('#cellModal button:nth-of-type(1)');
+            const headacheBtn = document.querySelector('#cellModal button:nth-of-type(2)');
+            const mildBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mild\')"]');
+            const modBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mod\')"]');
+            const sevBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'sev\')"]');
+            const medBtn = document.querySelector('#cellModal .modal-row:last-of-type button');
+            
+            // Reset all buttons
+            [migraineBtn, headacheBtn, mildBtn, modBtn, sevBtn, medBtn].forEach(btn => {
+                btn.classList.remove('button-pressed');
+            });
             
             // Set button states based on existing data
             if (diaryData[date]) {
                 const data = diaryData[date];
-                if (data.type) {
-                    document.querySelector(`button:contains('${data.type === 'M' ? 'Migraine' : 'Headache'}')`).classList.add('button-pressed');
-                }
-                if (data.severity) {
-                    const severityMap = {'mild': 'Mild', 'mod': 'Moderate', 'sev': 'Severe'};
-                    document.querySelector(`button:contains('${severityMap[data.severity]}')`).classList.add('button-pressed');
-                }
-                if (data.medication) {
-                    document.querySelector('button:contains("painkiller")').classList.add('button-pressed');
-                }
+                if (data.type === 'M') migraineBtn.classList.add('button-pressed');
+                if (data.type === 'H') headacheBtn.classList.add('button-pressed');
+                
+                if (data.severity === 'mild') mildBtn.classList.add('button-pressed');
+                if (data.severity === 'mod') modBtn.classList.add('button-pressed');
+                if (data.severity === 'sev') sevBtn.classList.add('button-pressed');
+                
+                if (data.medication) medBtn.classList.add('button-pressed');
             }
+            
+            document.getElementById('cellModal').style.display = 'block';
         }
 
         function toggleHeadacheType(type) {
