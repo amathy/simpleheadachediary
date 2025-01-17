@@ -107,6 +107,7 @@
             background-color: white;
             padding: 5px;
             cursor: pointer;
+            position: relative;
         }
 
         .diary-cell.today {
@@ -114,11 +115,21 @@
         }
 
         .date {
-            color: var(--secondary-purple);
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            color: var(--dark-grey);
             font-size: 0.9em;
+            font-weight: bold;
         }
 
-        .entry-type, .severity, .medication {
+        .entry-type {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+
+        .severity, .medication {
             text-align: center;
             font-weight: bold;
         }
