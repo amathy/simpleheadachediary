@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headache Diary</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        :root {
+            --pastel-blue: #E6E6FA;
+            --pastel-purple: #D8BFD8;
+            --light-grey: #F5F5F5;
+            --highlight: #E6E6FA;
+        }
+        .fixed-cell {
+            width: 80px;
+            height: 80px;
+            font-size: 0.9em;
+        }
+        .current-day {
+            background-color: var(--pastel-purple) !important;
+        }
+        .nav-bar {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 100;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .toggle-button {
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 4px;
+            border: 2px solid var(--pastel-purple);
+            background-color: white;
+            transition: all 0.3s;
+        }
+        .toggle-button.active {
+            background-color: var(--pastel-purple);
+            color: white;
+        }
+        .month-table {
+            background-color: var(--light-grey);
+            border-radius: 10px;
+            margin: 1rem;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl text-center py-4 text-purple-600">Headache Diary</h1>
+        
+        <div class="nav-bar flex justify-between items-center bg-white rounded-lg">
+            <div class="flex items-center">
+                <span id="currentYear" class="text-2xl mr-4"></span>
+                <button onclick="changeYear(-1)" class="px-4 py-2 text-purple-600">&lt;&lt;</button>
+                <button onclick="changeYear(1)" class="px-4 py-2 text-purple-600">&gt;&gt;</button>
+            </div>
+            <div>
+                <button onclick="shareDiary()" class="bg-purple-100 text-purple-600 px-4 py-2 rounded-lg mr-2">Share</button>
+                <button onclick="showDeleteModal()" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg">Delete Data</button>
+            </div>
+        </div>
+
+        <div id="diaryContent"></div>
+    </div>
+
+    <!-- Cell Change Modal -->
+    <div id="cellModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modalDate" class="text-xl"></h2>
+                <button onclick="closeCellModal()" class="text-gray-600">&times;</button>
+            </div>
+            <div class="mb-4">
+                <label>Did you have a:</label>
+                <div>
+                    <button onclick="toggleHeadacheType('M')" class="toggle-button" id="migraineBtn">Migraine</button>
+                    <button onclick="toggleHeadacheType('H')" class="toggle-button" id="headacheBtn">Headache</button>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label>Severity:</label>
+                <div>
+                    <button onclick="toggleSeverity('mild')" class="toggle-button" id="mildBtn">Mild</button>
+                    <button onclick="toggleSeverity('mod')" class="toggle-button" id="modBtn">Moderate</button>
+                    <button onclick="toggleSeverity('sev')" class="toggle-button" id="sevBtn">Severe</button>
+                </div>
+            </div>
+            <div>
+                <label>Treatment:</label>
+                <div>
+                    <button onclick="toggleTreatment()" class="toggle-button" id="treatmentBtn">Did you take a painkiller or triptan?</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl mb-4">Warning, this will delete your diary data</h2>
+            <div class="flex justify-end">
+                <button onclick="closeDeleteModal()" class="bg-gray-100 px-4 py-2 rounded-lg mr-2">Cancel</button>
+                <button onclick="deleteData()" class="bg-red-600 text-white px-4 py-2 rounded-lg">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentYear = new Date().getFullYear();
+        let selectedDate = null;
+        let diaryData = JSON.parse(localStorage.getItem('diaryData')) || {};
+
+        function init() {
+            updateYear();
+            renderDiary();
+            scrollToCurrentDay();
+        }
+
+        function updateYear() {
+            document.getElementById('currentYear').textContent = currentYear;
+        }
+
+        function changeYear(delta) {
+            currentYear += delta;
+            updateYear();
+            renderDiary();
+        }
+
+        function renderDiary() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            let html = '';
+
+            months.forEach((month, index) => {
+                html += createMonthTable(month, index);
+            });
+
+            document.getElementById('diaryContent').innerHTML = html;
+            highlightCurrentDay();
+        }
+
+        function createMonthTable(month, monthIndex) {
+            const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+            let html = `
+                <div class="month-table">
+                    <h2 class="text-xl mb-4 text-purple-600">${month}</h2>
+                    <table class="w-full">
+                        <tbody>`;
+
+            for (let i = 0; i < daysInMonth; i += 7) {
+                html += '<tr>';
+                for (let j = 0; j < 7 && (i + j) < daysInMonth; j++) {
+                    const day = i + j + 1;
+                    const dateKey = `${currentYear}-${(monthIndex + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    const entry = diaryData[dateKey] || {};
+                    
+                    html += `
+                        <td class="fixed-cell border p-2 text-center" onclick="openCellModal('${dateKey}')">
+                            <div class="text-purple-400">${day}</div>
+                            <div class="font-bold">${entry.type || ''}</div>
+                            <div class="font-bold">${entry.severity || ''}</div>
+                            <div class="font-bold">${entry.treatment ? 'x' : ''}</div>
+                        </td>`;
+                }
+                html += '</tr>';
+            }
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>`;
+            return html;
+        }
+
+        function openCellModal(date) {
+            selectedDate = date;
+            const entry = diaryData[date] || {};
+            
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('migraineBtn').classList.toggle('active', entry.type === 'M');
+            document.getElementById('headacheBtn').classList.toggle('active', entry.type === 'H');
+            document.getElementById('mildBtn').classList.toggle('active', entry.severity === 'mild');
+            document.getElementById('modBtn').classList.toggle('active', entry.severity === 'mod');
+            document.getElementById('sevBtn').classList.toggle('active', entry.severity === 'sev');
+            document.getElementById('treatmentBtn').classList.toggle('active', entry.treatment);
+            
+            document.getElementById('cellModal').style.display = 'block';
+        }
+
+        function closeCellModal() {
+            document.getElementById('cellModal').style.display = 'none';
+            selectedDate = null;
+        }
+
+        function toggleHeadacheType(type) {
+            if (!selectedDate) return;
+            
+            diaryData[selectedDate] = diaryData[selectedDate] || {};
+            diaryData[selectedDate].type = diaryData[selectedDate].type === type ? '' : type;
+            
+            document.getElementById('migraineBtn').classList.toggle('active', diaryData[selectedDate].type === 'M');
+            document.getElementById('headacheBtn').classList.toggle('active', diaryData[selectedDate].type === 'H');
+            
+            saveAndUpdate();
+        }
+
+        function toggleSeverity(severity) {
+            if (!selectedDate) return;
+            
+            diaryData[selectedDate] = diaryData[selectedDate] || {};
+            diaryData[selectedDate].severity = diaryData[selectedDate].severity === severity ? '' : severity;
+            
+            document.getElementById('mildBtn').classList.toggle('active', diaryData[selectedDate].severity === 'mild');
+            document.getElementById('modBtn').classList.toggle('active', diaryData[selectedDate].severity === 'mod');
+            document.getElementById('sevBtn').classList.toggle('active', diaryData[selectedDate].severity === 'sev');
+            
+            saveAndUpdate();
+        }
+
+        function toggleTreatment() {
+            if (!selectedDate) return;
+            
+            diaryData[selectedDate] = diaryData[selectedDate] || {};
+            diaryData[selectedDate].treatment = !diaryData[selectedDate].treatment;
+            
+            document.getElementById('treatmentBtn').classList.toggle('active', diaryData[selectedDate].treatment);
+            
+            saveAndUpdate();
+        }
+
+        function saveAndUpdate() {
+            localStorage.setItem('diaryData', JSON.stringify(diaryData));
+            renderDiary();
+        }
+
+        function showDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function deleteData() {
+            localStorage.removeItem('diaryData');
+            diaryData = {};
+            location.reload();
+        }
+
+        function highlightCurrentDay() {
+            const today = new Date();
+            if (today.getFullYear() === currentYear) {
+                const dateKey = `${currentYear}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+                const cells = document.getElementsByTagName('td');
+                for (let cell of cells) {
+                    if (cell.textContent.includes(today.getDate())) {
+                        cell.classList.add('current-day');
+                    }
+                }
+            }
+        }
+
+        function scrollToCurrentDay() {
+            const today = new Date();
+            if (today.getFullYear() === currentYear) {
+                const monthTables = document.getElementsByClassName('month-table');
+                if (monthTables[today.getMonth()]) {
+                    monthTables[today.getMonth()].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        function generateDiaryReport(format = 'text') {
+            const today = new Date();
+            let headacheDays = 0;
+            let migraineDays = 0;
+            let painkillerDays = 0;
+            
+            // Calculate totals for last 30 days
+            for (let i = 0; i < 30; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const entry = diaryData[dateKey] || {};
+                
+                if (entry.type === 'H' || entry.type === 'M') headacheDays++;
+                if (entry.type === 'M') migraineDays++;
+                if (entry.treatment) painkillerDays++;
+            }
+
+            if (format === 'html') {
+                let html = `
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f0f0f0; }
+                            .summary { background-color: #f8f8f8; padding: 15px; border-radius: 5px; }
+                            .daily-entries { margin-top: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Headache Diary Summary</h2>
+                        <p>Generated on ${today.toISOString().split('T')[0]}</p>
+                        
+                        <div class="summary">
+                            <h3>Last 30 Days Summary</h3>
+                            <table>
+                                <tr><th>Metric</th><th>Count</th></tr>
+                                <tr><td>Total Headache Days</td><td>${headacheDays}</td></tr>
+                                <tr><td>Total Migraine Days</td><td>${migraineDays}</td></tr>
+                                <tr><td>Total Painkiller Days</td><td>${painkillerDays}</td></tr>
+                            </table>
+                        </div>
+
+                        <div class="daily-entries">
+                            <h3>Last 90 Days Detail</h3>
+                            <table>
+                                <tr><th>Date</th><th>Type</th><th>Severity</th><th>Treatment</th></tr>
+                `;
+
+                // Generate entries table
+                for (let i = 0; i < 90; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateKey = date.toISOString().split('T')[0];
+                    const entry = diaryData[dateKey] || {};
+                    
+                    html += `
+                        <tr>
+                            <td>${dateKey}</td>
+                            <td>${entry.type || '-'}</td>
+                            <td>${entry.severity || '-'}</td>
+                            <td>${entry.treatment ? 'x' : '-'}</td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                            </table>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                return html;
+            } else {
+                // Plain text format
+                let report = `Headache diary summary on ${today.toISOString().split('T')[0]}\n\n`;
+                report += "Last 30 day summary:\n\n";
+                report += `Total number of headache days: ${headacheDays}\n`;
+                report += `Total number of migraine days: ${migraineDays}\n`;
+                report += `Total number of painkiller days: ${painkillerDays}\n\n`;
+                
+                // Generate ASCII table for last 90 days
+                report += "Last 90 days diary entries:\n";
+                report += "Date       | Type | Severity | Treatment\n";
+                report += "-----------+------+----------+----------\n";
+                
+                for (let i = 0; i < 90; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateKey = date.toISOString().split('T')[0];
+                    const entry = diaryData[dateKey] || {};
+                    
+                    report += `${dateKey} | ${entry.type || '-'}    | ${(entry.severity || '-').padEnd(8)} | ${entry.treatment ? 'x' : '-'}\n`;
+                }
+                
+                return report;
+            }
+        }
+
+        async function shareDiary() {
+            // Create both HTML and text versions
+            const htmlReport = generateDiaryReport('html');
+            const textReport = generateDiaryReport('text');
+            
+            if (navigator.share) {
+                try {
+                    // Try to share with HTML content
+                    await navigator.share({
+                        title: 'Headache Diary Report',
+                        text: textReport,
+                        html: htmlReport
+                    });
+                } catch (err) {
+                    console.error('Error sharing:', err);
+                    // If HTML sharing fails, fall back to text
+                    try {
+                        await navigator.share({
+                            title: 'Headache Diary Report',
+                            text: textReport
+                        });
+                    } catch (err) {
+                        console.error('Error sharing text:', err);
+                        alert('Unable to share report');
+                    }
+                }
+            } else {
+                // If Web Share API is not supported, offer download
+                const blob = new Blob([htmlReport], {type: 'text/html'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'headache-diary-report.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

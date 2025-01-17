@@ -1,0 +1,43 @@
+Please create a vanilla html/js page to do a headache diary for use on a mobile. The diary uses local storage to save the data.
+
+
+
+Make the diary resize so that it always fits within a single browser screen. Use nice pastel colours (blues, purples, light greys)
+The diary looks as follows:
+There is a title that says "Headache diary"
+
+Then there is the navigation bar.
+The navigation bar starts with the current year (which has to be dynamically determined), in big font. Then there are two button "<<" and ">>" which allow to decrement and increment the year.  Then there is a button to share the diary which call the WebShareAPI to share the DIARYREPORT (see below). At right side there is a delete data button. When pressed this brings up a modal which says "Warning, this will delete your diary data", and a "continue" and "cancel" button. When the "continue" is pressed, the diary data is deleted, and the page is reloaded.
+the navigation bar stays at the stop even when scrolling
+
+Then the diary proper starts. This consists of a collection of twelve tables, one for each month. The table has an entry for each day. The table is arranged over 3 or 4 rows depending on the number of days in the month.
+
+A diary entry consists of 4 rows:
+row 1: the date in a different colour which fits with colour way
+row 2 (centred): M (which means "migraine") or H (which means " headache") or left empty if there was no headache
+row 3 (centred): "mild", "mod", "sev" indicating the severity of the headache. empty if there was no headache
+row 4 (Centred): an "x" if a painkiller was taken, or empty if there was no headache. Make the cells big enough to that they can fit all of this text in, and make them a fixed size both in weight an.
+for row 2 to 4 use a bold font.
+When clicking on the diary entry, it opens the "cell change modal"
+
+The "cell change modal" is an interface to change the value of the diary entry selected.
+At the top of the modal is the date of the selected sell and a button to close the modal.
+
+The modal again has three rows:
+row 1: A label "did you have a: " followed by a "migraine" and a "headache" button. Pressing the "migraine" button stores an "M" for the diary entry , the "headache" button stores an "H"
+row 2: A label "severity" followed by a "mild", a "moderate" and a "severe" button, they store "mild", "mod","sev" respectively
+row 3:a label "treatment" a "did you take a painkiller or triptan" button. Stores an "x" if pressed.
+The buttons in this modal are like toggles, i.e. when pressed they stay pressed, and the next click unpresses them. For rows 1 and 2 the buttons are mutually exclusive, i.e. pressing one button unpresses the other. Make the buttons look pretty and rounded.
+
+the cell correponding to current day (which should be dynamically queried) should be displayed in pastel lilac colour. on loading the app should travel to the current day.
+
+The DIARYREPORT (which is not visible to the user, and only used for WebShare purposes) displays the following:
+"Headache diary summary on CURRENTDATE" where currentdate is today
+"Last 30 day summary:"
+Then a table with following rows:
+total number of headaches days: Htot where Htot is the number of diary entries with either an "H" or an "M" in the last 30 days up to today inclusive
+total number of migraine days: Mtot where Mtot is the number of diary entries  with an M in the last 30 days up to today inclusive
+total number of painkiller days: Ptot where Ptot is the number of diary entries  with an x in the last 30 days up to today inclusive
+The table ends there.
+then a Ascii table representing the diary entries (both empty and filled) over the last 90 days.
+here endeth the DIARYREPORT
