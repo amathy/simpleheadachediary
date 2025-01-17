@@ -334,27 +334,21 @@
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
             
-            // Toggle the type and update button states - only within the headache type row
-            const headacheButtons = document.querySelectorAll('#cellModal .modal-row:first-of-type button');
-            headacheButtons.forEach(button => {
-                const isMatchingButton = (type === 'M' && button.textContent === 'Migraine') ||
-                                      (type === 'H' && button.textContent === 'Headache');
-                if (diaryData[selectedDate].type === type) {
-                    // If clicking an already active button, unpress it
-                    button.classList.remove('button-pressed');
-                    if (isMatchingButton) {
-                        diaryData[selectedDate].type = '';
-                    }
-                } else {
-                    // If clicking a new button, press it and unpress the other one
-                    if (isMatchingButton) {
-                        button.classList.add('button-pressed');
-                        diaryData[selectedDate].type = type;
-                    } else {
-                        button.classList.remove('button-pressed');
-                    }
-                }
-            });
+            // Get both headache type buttons
+            const migraineBtn = document.querySelector('#cellModal button:nth-of-type(1)');
+            const headacheBtn = document.querySelector('#cellModal button:nth-of-type(2)');
+            
+            if (diaryData[selectedDate].type === type) {
+                // If same button clicked, remove type and unpress button
+                diaryData[selectedDate].type = '';
+                if (type === 'M') migraineBtn.classList.remove('button-pressed');
+                if (type === 'H') headacheBtn.classList.remove('button-pressed');
+            } else {
+                // If different button clicked, set type and update button states
+                diaryData[selectedDate].type = type;
+                migraineBtn.classList.toggle('button-pressed', type === 'M');
+                headacheBtn.classList.toggle('button-pressed', type === 'H');
+            }
             
             saveAndUpdate();
         }
@@ -364,27 +358,24 @@
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
             
-            // Toggle the severity and update button states - only within the severity row
-            const severityButtons = document.querySelectorAll('#cellModal .modal-row:nth-of-type(2) button');
-            severityButtons.forEach(button => {
-                const btnSeverity = button.textContent.toLowerCase().startsWith('mod') ? 'mod' :
-                                  button.textContent.toLowerCase().startsWith('sev') ? 'sev' : 'mild';
-                if (diaryData[selectedDate].severity === severity) {
-                    // If clicking an already active button, unpress it
-                    button.classList.remove('button-pressed');
-                    if (btnSeverity === severity) {
-                        diaryData[selectedDate].severity = '';
-                    }
-                } else {
-                    // If clicking a new button, press it and unpress the others
-                    if (btnSeverity === severity) {
-                        button.classList.add('button-pressed');
-                        diaryData[selectedDate].severity = severity;
-                    } else {
-                        button.classList.remove('button-pressed');
-                    }
-                }
-            });
+            // Get all severity buttons
+            const mildBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mild\')"]');
+            const modBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mod\')"]');
+            const sevBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'sev\')"]');
+            
+            if (diaryData[selectedDate].severity === severity) {
+                // If same button clicked, remove severity and unpress button
+                diaryData[selectedDate].severity = '';
+                mildBtn.classList.remove('button-pressed');
+                modBtn.classList.remove('button-pressed');
+                sevBtn.classList.remove('button-pressed');
+            } else {
+                // If different button clicked, set severity and update button states
+                diaryData[selectedDate].severity = severity;
+                mildBtn.classList.toggle('button-pressed', severity === 'mild');
+                modBtn.classList.toggle('button-pressed', severity === 'mod');
+                sevBtn.classList.toggle('button-pressed', severity === 'sev');
+            }
             
             saveAndUpdate();
         }
@@ -393,11 +384,11 @@
             if (!selectedDate) return;
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
-            
-            // Toggle the medication state - only affects the medication button
-            const medicationButton = document.querySelector('#cellModal .modal-row:last-of-type button');
             diaryData[selectedDate].medication = !diaryData[selectedDate].medication;
-            medicationButton.classList.toggle('button-pressed', diaryData[selectedDate].medication);
+            
+            // Toggle medication button state
+            const medButton = document.querySelector('#cellModal .modal-row:last-of-type button');
+            medButton.classList.toggle('button-pressed', diaryData[selectedDate].medication);
             
             saveAndUpdate();
         }
