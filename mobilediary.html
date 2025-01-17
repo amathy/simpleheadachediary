@@ -68,23 +68,26 @@
             padding: 8px 16px;
             border: 2px solid var(--secondary-purple);
             border-radius: 20px;
-            background-color: var(--primary-purple);
+            background-color: white;
             color: var(--dark-grey);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-weight: 500;
+            outline: none;
         }
 
         button:hover {
-            background-color: var(--secondary-purple);
-            transform: translateY(-1px);
+            background-color: var(--primary-purple);
         }
 
         .button-pressed {
             background-color: var(--secondary-purple);
-            border-color: var(--dark-grey);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-            transform: translateY(1px);
+            color: white;
+            border-color: var(--secondary-purple);
+        }
+
+        .button-pressed:hover {
+            background-color: var(--secondary-purple);
         }
 
         .month-table {
@@ -334,23 +337,19 @@
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
             
-            // Get both headache type buttons
-            const migraineBtn = document.querySelector('#cellModal button:nth-of-type(1)');
-            const headacheBtn = document.querySelector('#cellModal button:nth-of-type(2)');
+            const buttons = document.querySelectorAll('#cellModal .modal-row:first-of-type button');
+            const currentType = diaryData[selectedDate].type;
             
-            if (diaryData[selectedDate].type === type) {
-                // If same button clicked, clear type and unpress button
+            buttons.forEach(btn => btn.classList.remove('button-pressed'));
+            
+            if (currentType === type) {
+                // If clicking the same type, clear it
                 diaryData[selectedDate].type = '';
-                // Reset both buttons to default state
-                migraineBtn.classList.remove('button-pressed');
-                headacheBtn.classList.remove('button-pressed');
             } else {
-                // If different button clicked, set type and update button states
+                // If clicking a different type, set it
                 diaryData[selectedDate].type = type;
-                migraineBtn.classList.remove('button-pressed');
-                headacheBtn.classList.remove('button-pressed');
-                if (type === 'M') migraineBtn.classList.add('button-pressed');
-                if (type === 'H') headacheBtn.classList.add('button-pressed');
+                const buttonToPress = type === 'M' ? buttons[0] : buttons[1];
+                buttonToPress.classList.add('button-pressed');
             }
             
             saveAndUpdate();
@@ -361,29 +360,19 @@
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
             
-            // Get all severity buttons
-            const mildBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mild\')"]');
-            const modBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mod\')"]');
-            const sevBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'sev\')"]');
+            const buttons = document.querySelectorAll('#cellModal .modal-row:nth-of-type(2) button');
+            const currentSeverity = diaryData[selectedDate].severity;
             
-            if (diaryData[selectedDate].severity === severity) {
-                // If same button clicked, clear severity and unpress all buttons
+            buttons.forEach(btn => btn.classList.remove('button-pressed'));
+            
+            if (currentSeverity === severity) {
+                // If clicking the same severity, clear it
                 diaryData[selectedDate].severity = '';
-                // Reset all buttons to default state
-                mildBtn.classList.remove('button-pressed');
-                modBtn.classList.remove('button-pressed');
-                sevBtn.classList.remove('button-pressed');
             } else {
-                // If different button clicked, set severity and update button states
+                // If clicking a different severity, set it
                 diaryData[selectedDate].severity = severity;
-                // First reset all buttons
-                mildBtn.classList.remove('button-pressed');
-                modBtn.classList.remove('button-pressed');
-                sevBtn.classList.remove('button-pressed');
-                // Then set the active one
-                if (severity === 'mild') mildBtn.classList.add('button-pressed');
-                if (severity === 'mod') modBtn.classList.add('button-pressed');
-                if (severity === 'sev') sevBtn.classList.add('button-pressed');
+                const severityMap = {mild: 0, mod: 1, sev: 2};
+                buttons[severityMap[severity]].classList.add('button-pressed');
             }
             
             saveAndUpdate();
@@ -395,15 +384,8 @@
             diaryData[selectedDate] = diaryData[selectedDate] || {};
             const medButton = document.querySelector('#cellModal .modal-row:last-of-type button');
             
-            if (diaryData[selectedDate].medication) {
-                // If medication was on, turn it off and reset button
-                diaryData[selectedDate].medication = false;
-                medButton.classList.remove('button-pressed');
-            } else {
-                // If medication was off, turn it on and set button
-                diaryData[selectedDate].medication = true;
-                medButton.classList.add('button-pressed');
-            }
+            diaryData[selectedDate].medication = !diaryData[selectedDate].medication;
+            medButton.classList.toggle('button-pressed');
             
             saveAndUpdate();
         }
