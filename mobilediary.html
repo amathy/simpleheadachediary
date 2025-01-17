@@ -71,7 +71,7 @@
             background-color: white;
             color: var(--dark-grey);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.1s ease-in-out;
             font-weight: 500;
             outline: none;
         }
@@ -83,7 +83,6 @@
         .button-pressed {
             background-color: var(--secondary-purple);
             color: white;
-            border-color: var(--secondary-purple);
         }
 
         .button-pressed:hover {
@@ -191,7 +190,7 @@
         <div id="diary-content"></div>
     </div>
 
-    <!-- Cell Change Modal -->
+        <!-- Cell Change Modal -->
     <div id="cellModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('cellModal')">&times;</span>
@@ -199,25 +198,25 @@
             
             <div class="modal-row">
                 <label>Did you have a:</label>
-                <div class="modal-buttons">
-                    <button onclick="toggleHeadacheType('M')">Migraine</button>
-                    <button onclick="toggleHeadacheType('H')">Headache</button>
+                <div class="modal-buttons" id="headacheButtons">
+                    <button data-type="M" onclick="selectHeadacheType(this, 'M')">Migraine</button>
+                    <button data-type="H" onclick="selectHeadacheType(this, 'H')">Headache</button>
                 </div>
             </div>
             
             <div class="modal-row">
                 <label>Severity:</label>
-                <div class="modal-buttons">
-                    <button onclick="toggleSeverity('mild')">Mild</button>
-                    <button onclick="toggleSeverity('mod')">Moderate</button>
-                    <button onclick="toggleSeverity('sev')">Severe</button>
+                <div class="modal-buttons" id="severityButtons">
+                    <button data-severity="mild" onclick="selectSeverity(this, 'mild')">Mild</button>
+                    <button data-severity="mod" onclick="selectSeverity(this, 'mod')">Moderate</button>
+                    <button data-severity="sev" onclick="selectSeverity(this, 'sev')">Severe</button>
                 </div>
             </div>
             
             <div class="modal-row">
                 <label>Treatment:</label>
                 <div class="modal-buttons">
-                    <button onclick="toggleMedication()">Did you take a painkiller or triptan?</button>
+                    <button onclick="toggleMedication(this)">Did you take a painkiller or triptan?</button>
                 </div>
             </div>
         </div>
@@ -332,60 +331,60 @@
             }
         }
 
-        function toggleHeadacheType(type) {
+        function selectHeadacheType(button, type) {
             if (!selectedDate) return;
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
+            const buttons = document.querySelectorAll('#headacheButtons button');
             
-            const buttons = document.querySelectorAll('#cellModal .modal-row:first-of-type button');
-            const currentType = diaryData[selectedDate].type;
-            
-            buttons.forEach(btn => btn.classList.remove('button-pressed'));
-            
-            if (currentType === type) {
-                // If clicking the same type, clear it
+            if (button.classList.contains('button-pressed')) {
+                // If clicking already selected button, deselect it
+                button.classList.remove('button-pressed');
                 diaryData[selectedDate].type = '';
             } else {
-                // If clicking a different type, set it
+                // Clear all buttons first
+                buttons.forEach(btn => btn.classList.remove('button-pressed'));
+                // Select the clicked button
+                button.classList.add('button-pressed');
                 diaryData[selectedDate].type = type;
-                const buttonToPress = type === 'M' ? buttons[0] : buttons[1];
-                buttonToPress.classList.add('button-pressed');
             }
             
             saveAndUpdate();
         }
 
-        function toggleSeverity(severity) {
+        function selectSeverity(button, severity) {
             if (!selectedDate) return;
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
+            const buttons = document.querySelectorAll('#severityButtons button');
             
-            const buttons = document.querySelectorAll('#cellModal .modal-row:nth-of-type(2) button');
-            const currentSeverity = diaryData[selectedDate].severity;
-            
-            buttons.forEach(btn => btn.classList.remove('button-pressed'));
-            
-            if (currentSeverity === severity) {
-                // If clicking the same severity, clear it
+            if (button.classList.contains('button-pressed')) {
+                // If clicking already selected button, deselect it
+                button.classList.remove('button-pressed');
                 diaryData[selectedDate].severity = '';
             } else {
-                // If clicking a different severity, set it
+                // Clear all buttons first
+                buttons.forEach(btn => btn.classList.remove('button-pressed'));
+                // Select the clicked button
+                button.classList.add('button-pressed');
                 diaryData[selectedDate].severity = severity;
-                const severityMap = {mild: 0, mod: 1, sev: 2};
-                buttons[severityMap[severity]].classList.add('button-pressed');
             }
             
             saveAndUpdate();
         }
 
-        function toggleMedication() {
+        function toggleMedication(button) {
             if (!selectedDate) return;
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
-            const medButton = document.querySelector('#cellModal .modal-row:last-of-type button');
             
-            diaryData[selectedDate].medication = !diaryData[selectedDate].medication;
-            medButton.classList.toggle('button-pressed');
+            if (button.classList.contains('button-pressed')) {
+                button.classList.remove('button-pressed');
+                diaryData[selectedDate].medication = false;
+            } else {
+                button.classList.add('button-pressed');
+                diaryData[selectedDate].medication = true;
+            }
             
             saveAndUpdate();
         }
