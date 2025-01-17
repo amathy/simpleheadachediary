@@ -71,12 +71,12 @@
             background-color: white;
             color: var(--dark-grey);
             cursor: pointer;
-            transition: all 0.1s ease-in-out;
+            transition: none;
             font-weight: 500;
             outline: none;
         }
 
-        button:hover {
+        button:not(.button-pressed):hover {
             background-color: var(--primary-purple);
         }
 
@@ -85,8 +85,15 @@
             color: white;
         }
 
+        /* Override hover state when pressed */
         .button-pressed:hover {
             background-color: var(--secondary-purple);
+            color: white;
+        }
+
+        /* Ensure clean white background when not pressed */
+        button:not(.button-pressed) {
+            background-color: white;
         }
 
         .month-table {
