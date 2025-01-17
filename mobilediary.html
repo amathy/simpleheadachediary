@@ -386,13 +386,59 @@
 
         async function shareDiary() {
             const report = generateDiaryReport();
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Headache Diary Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; }
+                        table { border-collapse: collapse; width: 100%; max-width: 800px; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        h1, h2 { color: #333; }
+                    </style>
+                </head>
+                <body>
+                    ${report}
+                </body>
+                </html>`;
+            
+            // Create a Blob containing the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            
             try {
-                await navigator.share({
-                    title: 'Headache Diary Report',
-                    text: report
-                });
+                // Try native sharing first
+                if (navigator.canShare && navigator.canShare({ files: [new File([blob], 'report.html', { type: 'text/html' })] })) {
+                    await navigator.share({
+                        files: [new File([blob], 'report.html', { type: 'text/html' })],
+                        title: 'Headache Diary Report',
+                    });
+                } else {
+                    // Fallback to creating a downloadable file
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'headache-diary-report.html';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
             } catch (err) {
-                alert('Unable to share diary report');
+                console.error('Sharing failed:', err);
+                alert('Unable to share diary report. Creating downloadable file instead.');
+                // Fallback to creating a downloadable file
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'headache-diary-report.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             }
         }
 
