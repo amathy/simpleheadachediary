@@ -31,13 +31,14 @@ The buttons in this modal are like toggles, i.e. when pressed they stay pressed,
 
 the cell correponding to current day (which should be dynamically queried) should be displayed in pastel lilac colour. on loading the app should travel to the current day.
 
-The DIARYREPORT (which is not visible to the user, and only used for WebShare purposes) displays the following:
+The DIARYREPORT (which is not visible to the user, and only used for WebShare purposes) displays the following in pretty HTML, not text
 "Headache diary summary on CURRENTDATE" where currentdate is today
 "Last 30 day summary:"
 Then a table with following rows:
 total number of headaches days: Htot where Htot is the number of diary entries with either an "H" or an "M" in the last 30 days up to today inclusive
 total number of migraine days: Mtot where Mtot is the number of diary entries  with an M in the last 30 days up to today inclusive
 total number of painkiller days: Ptot where Ptot is the number of diary entries  with an x in the last 30 days up to today inclusive
-The table ends there.
-then a Ascii table representing the diary entries (both empty and filled) over the last 90 days.
+The summary table ends there.
+then a table DTABLE representing the diary entries (both empty and filled) over the last 90 days.
+DTABLE has a row for each of the 4 calendar months up to the current one (note this may wrap back over a year) and 31 columns representing the days.
 here endeth the DIARYREPORT
