@@ -535,18 +535,20 @@
                 currentDate.setMonth(currentDate.getMonth() - 1);
             }
 
-            // Generate the DTABLE
+            // Generate the DTABLE with fixed cell sizes
             let dtableHtml = `
-                <table border="1" style="margin-top: 20px; border-collapse: collapse;">
+                <table border="1" style="margin-top: 20px; border-collapse: collapse; table-layout: fixed; width: auto;">
                     <tr>
-                        <th style="padding: 5px;">Month</th>
-                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 5px;">${i + 1}</th>`).join('')}
+                        <th style="padding: 5px; width: 50px;">Month</th>
+                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 5px; width: 50px; text-align: center;">${i + 1}</th>`).join('')}
                     </tr>`;
 
             months.forEach(month => {
                 const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+                const shortMonth = month.toLocaleDateString('en-US', { month: 'short' }).toLowerCase();
+                
                 let row = `<tr>
-                    <td style="padding: 5px;">${monthNames[month.getMonth()]}</td>`;
+                    <td style="padding: 5px; text-align: center;">${shortMonth}</td>`;
                 
                 for (let day = 1; day <= 31; day++) {
                     if (day <= daysInMonth) {
@@ -561,14 +563,15 @@
                             if (entry.medication) cellContent += 'x';
                         }
                         
-                        row += `<td style="padding: 5px; text-align: center;">${cellContent}</td>`;
+                        row += `<td style="padding: 5px; text-align: center; height: 60px; vertical-align: middle;">${cellContent}</td>`;
                     } else {
-                        row += '<td style="padding: 5px; background-color: #f0f0f0;"></td>';
+                        row += '<td style="padding: 5px; background-color: #f0f0f0; height: 60px;"></td>';
                     }
                 }
                 row += '</tr>';
                 dtableHtml += row;
             });
+            dtableHtml += '</table>';
             dtableHtml += '</table>';
 
             return `
