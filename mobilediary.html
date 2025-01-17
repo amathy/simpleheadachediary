@@ -66,20 +66,25 @@
 
         button {
             padding: 8px 16px;
-            border: none;
+            border: 2px solid var(--secondary-purple);
             border-radius: 20px;
             background-color: var(--primary-purple);
             color: var(--dark-grey);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         button:hover {
             background-color: var(--secondary-purple);
+            transform: translateY(-1px);
         }
 
         .button-pressed {
             background-color: var(--secondary-purple);
+            border-color: var(--dark-grey);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(1px);
         }
 
         .month-table {
@@ -328,7 +333,20 @@
             if (!selectedDate) return;
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
-            diaryData[selectedDate].type = diaryData[selectedDate].type === type ? '' : type;
+            
+            // Toggle the type and update button states
+            const buttons = document.querySelectorAll('#cellModal .modal-row:first-of-type button');
+            buttons.forEach(button => {
+                button.classList.remove('button-pressed');
+            });
+            
+            if (diaryData[selectedDate].type === type) {
+                diaryData[selectedDate].type = '';
+            } else {
+                diaryData[selectedDate].type = type;
+                const buttonToPress = type === 'M' ? buttons[0] : buttons[1];
+                buttonToPress.classList.add('button-pressed');
+            }
             
             saveAndUpdate();
         }
@@ -337,7 +355,20 @@
             if (!selectedDate) return;
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
-            diaryData[selectedDate].severity = diaryData[selectedDate].severity === severity ? '' : severity;
+            
+            // Toggle the severity and update button states
+            const buttons = document.querySelectorAll('#cellModal .modal-row:nth-of-type(2) button');
+            buttons.forEach(button => {
+                button.classList.remove('button-pressed');
+            });
+            
+            if (diaryData[selectedDate].severity === severity) {
+                diaryData[selectedDate].severity = '';
+            } else {
+                diaryData[selectedDate].severity = severity;
+                const severityIndex = {'mild': 0, 'mod': 1, 'sev': 2};
+                buttons[severityIndex[severity]].classList.add('button-pressed');
+            }
             
             saveAndUpdate();
         }
@@ -347,6 +378,10 @@
             
             diaryData[selectedDate] = diaryData[selectedDate] || {};
             diaryData[selectedDate].medication = !diaryData[selectedDate].medication;
+            
+            // Toggle the medication button state
+            const button = document.querySelector('#cellModal .modal-row:last-of-type button');
+            button.classList.toggle('button-pressed', diaryData[selectedDate].medication);
             
             saveAndUpdate();
         }
