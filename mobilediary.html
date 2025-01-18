@@ -36,7 +36,7 @@
         .title {
             text-align: center;
             padding: 10px;
-            background-color: var(--secondary-purple);
+            background-color: #B3D9FF !important;  /* Same as nav bar */
             color: var(--dark-grey);
             margin-bottom: 10px;
         }
@@ -104,9 +104,13 @@
             width: calc(100% / 7);
             height: 100px;
             border: 1px solid var(--secondary-blue);
-            background-color: white;
+            background-color: #E6F3FF !important;  /* Light blue - same as modals */
             padding: 5px;
             cursor: pointer;
+        }
+
+        .diary-cell.today {
+            background-color: #E6E6FA !important;  /* Pastel lilac */
         }
 
         .diary-cell.today {
@@ -155,7 +159,7 @@
 
         .modal-content {
             position: relative;
-            background-color: white;
+            background-color: #E6F3FF !important;  /* Light blue background */
             margin: 15% auto;
             padding: 20px;
             width: 90%;
