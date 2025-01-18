@@ -5,16 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Headache Diary</title>
     <style>
-        :root {
-            --primary-blue: #E6F3FF;
-            --secondary-blue: #B3D9FF;
-            --primary-purple: #E6E6FA;
-            --secondary-purple: #D8BFD8;
-            --light-grey: #F5F5F5;
-            --dark-grey: #4A5568;
-            --highlight: #E6E6FA;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -23,8 +13,8 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-color: var(--primary-blue);
-            color: var(--dark-blue);
+            background-color: #E6F3FF;  /* Light blue background */
+            color: #4A5568;
         }
 
         .container {
@@ -36,15 +26,15 @@
         .title {
             text-align: center;
             padding: 10px;
-            background-color: var(--secondary-purple);
-            color: var(--dark-grey);
+            background-color: #B3D9FF;  /* Darker blue matching nav */
+            color: #4A5568;
             margin-bottom: 10px;
         }
 
         .navbar {
             position: sticky;
             top: 0;
-            background-color: var(--secondary-blue);
+            background-color: #B3D9FF;  /* Darker blue */
             padding: 10px;
             display: flex;
             justify-content: space-between;
@@ -62,27 +52,28 @@
         .current-year {
             font-size: 1.5em;
             font-weight: bold;
+            color: #000000;
         }
 
         button {
             padding: 8px 16px;
-            border: 2px solid var(--secondary-purple);
+            border: 2px solid #D8BFD8;
             border-radius: 20px;
-            background-color: var(--primary-purple);
-            color: var(--dark-grey);
+            background-color: #E6E6FA;
+            color: #4A5568;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
         }
 
         button:hover {
-            background-color: var(--secondary-purple);
+            background-color: #D8BFD8;
             transform: translateY(-1px);
         }
 
         .button-pressed {
-            background-color: var(--secondary-purple);
-            border-color: var(--dark-grey);
+            background-color: #D8BFD8;
+            border-color: #4A5568;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
             transform: translateY(1px);
         }
@@ -94,23 +85,23 @@
         }
 
         .month-title {
-            background-color: var(--secondary-blue);
+            background-color: #B3D9FF;  /* Darker blue */
             padding: 5px;
             text-align: center;
-            color: var(--dark-grey);
+            color: #4A5568;
         }
 
         .diary-cell {
             width: calc(100% / 7);
             height: 100px;
-            border: 1px solid var(--secondary-blue);
-            background-color: white;
+            border: 1px solid #B3D9FF;
+            background-color: #E6F3FF;  /* Light blue matching body */
             padding: 5px;
             cursor: pointer;
         }
 
         .diary-cell.today {
-            background-color: var(--highlight);
+            background-color: #E6E6FA;
         }
 
         .cell-container {
@@ -121,7 +112,7 @@
         }
 
         .date {
-            color: var(--dark-grey);
+            color: #4A5568;
             font-size: 0.9em;
             font-weight: bold;
             text-align: left;
@@ -140,6 +131,7 @@
         .entry-type, .severity, .medication {
             text-align: center;
             font-weight: bold;
+            color: #000000;
         }
 
         .modal {
@@ -155,7 +147,7 @@
 
         .modal-content {
             position: relative;
-            background-color: white;
+            background-color: #E6F3FF;  /* Light blue matching body */
             margin: 15% auto;
             padding: 20px;
             width: 90%;
@@ -165,6 +157,9 @@
 
         .modal-row {
             margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .modal-buttons {
@@ -177,7 +172,23 @@
             position: absolute;
             right: 10px;
             top: 10px;
+            width: 32px;
+            height: 32px;
+            background-color: #E6E6FA;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #D8BFD8;
+            transition: all 0.2s ease;
+        }
+
+        .close:hover {
+            background-color: #D8BFD8;
+            transform: scale(1.1);
         }
 
         @media (max-width: 600px) {
