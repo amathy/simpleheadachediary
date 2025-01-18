@@ -171,6 +171,13 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .close {
@@ -178,6 +185,18 @@
             right: 10px;
             top: 10px;
             cursor: pointer;
+            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            background-color: var(--light-grey);
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .close:hover {
+            background-color: var(--secondary-blue);
         }
 
         @media (max-width: 600px) {
@@ -216,8 +235,8 @@
             <div class="modal-row">
                 <label>Did you have a:</label>
                 <div class="modal-buttons">
-                    <button onclick="toggleHeadacheType('M')">Migraine</button>
                     <button onclick="toggleHeadacheType('H')">Headache</button>
+                    <button onclick="toggleHeadacheType('M')">Migraine</button>
                 </div>
             </div>
             
