@@ -545,10 +545,6 @@
                     if (entry.medication) painkillerDays++;
                 }
             }
-
-            // Generate the last 90 days table
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                              'July', 'August', 'September', 'October', 'November', 'December'];
             
             // Get the last 4 calendar months
             let months = [];
@@ -558,18 +554,21 @@
                 currentDate.setMonth(currentDate.getMonth() - 1);
             }
 
-          // Generate the DTABLE
-          let dtableHtml = `
+        // Generate the DTABLE
+        let dtableHtml = `
                 <table border="1" style="margin-top: 20px; border-collapse: collapse; table-layout: fixed; width: 100%; font-size: 11px;">
                     <tr>
-                        <th style="padding: 5px; width: 40px;">Month</th>
+                        <th style="padding: 2px; width: 40px;">Month</th>
                         ${Array.from({length: 31}, (_, i) => `<th style="padding: 2px; width: 25px; height: 25px;">${i + 1}</th>`).join('')}
                     </tr>`;
+
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
             months.forEach(month => {
                 const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
                 let row = `<tr>
-                    <td style="padding: 2px; text-align: center;">${monthNames[month.getMonth()]}</td>`;
+                    <td style="padding: 2px; text-align: center; width: 40px;">${monthNames[month.getMonth()]}</td>`;
                 
                 for (let day = 1; day <= 31; day++) {
                     if (day <= daysInMonth) {
@@ -593,7 +592,7 @@
                 dtableHtml += row;
             });
             dtableHtml += '</table>';
-            
+
             return `
                 <h1>Headache Diary Summary on ${today.toLocaleDateString()}</h1>
                 <h2>Last 30 Day Summary:</h2>
