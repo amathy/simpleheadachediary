@@ -545,10 +545,6 @@
                     if (entry.medication) painkillerDays++;
                 }
             }
-
-            // Generate the last 90 days table
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                              'July', 'August', 'September', 'October', 'November', 'December'];
             
             // Get the last 4 calendar months
             let months = [];
@@ -558,18 +554,21 @@
                 currentDate.setMonth(currentDate.getMonth() - 1);
             }
 
-            // Generate the DTABLE
-            let dtableHtml = `
-                <table border="1" style="margin-top: 20px; border-collapse: collapse;">
+        // Generate the DTABLE
+        let dtableHtml = `
+                <table border="1" style="margin-top: 20px; border-collapse: collapse; table-layout: fixed; width: 100%; font-size: 11px;">
                     <tr>
-                        <th style="padding: 5px;">Month</th>
-                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 5px;">${i + 1}</th>`).join('')}
+                        <th style="padding: 2px; width: 40px;">Month</th>
+                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 2px; width: 25px; height: 25px;">${i + 1}</th>`).join('')}
                     </tr>`;
+
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
             months.forEach(month => {
                 const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
                 let row = `<tr>
-                    <td style="padding: 5px;">${monthNames[month.getMonth()]}</td>`;
+                    <td style="padding: 2px; text-align: center; width: 40px;">${monthNames[month.getMonth()]}</td>`;
                 
                 for (let day = 1; day <= 31; day++) {
                     if (day <= daysInMonth) {
@@ -584,9 +583,9 @@
                             if (entry.medication) cellContent += 'x';
                         }
                         
-                        row += `<td style="padding: 5px; text-align: center;">${cellContent}</td>`;
+                        row += `<td style="padding: 2px; text-align: center; width: 25px; height: 25px; vertical-align: middle;">${cellContent}</td>`;
                     } else {
-                        row += '<td style="padding: 5px; background-color: #f0f0f0;"></td>';
+                        row += '<td style="padding: 2px; background-color: #f0f0f0; width: 25px; height: 25px;"></td>';
                     }
                 }
                 row += '</tr>';
@@ -598,11 +597,11 @@
                 <h1>Headache Diary Summary on ${today.toLocaleDateString()}</h1>
                 <h2>Last 30 Day Summary:</h2>
                 <table style="margin-bottom: 20px; border-collapse: collapse;" border="1">
-                    <tr><td style="padding: 5px;">Total headache days:</td><td style="padding: 5px;">${headacheDays}</td></tr>
-                    <tr><td style="padding: 5px;">Total migraine days:</td><td style="padding: 5px;">${migraineDays}</td></tr>
-                    <tr><td style="padding: 5px;">Total painkiller days:</td><td style="padding: 5px;">${painkillerDays}</td></tr>
+                <tr><td style="padding: 5px; width: 175px;">Total headache days:</td><td style="padding: 5px; width: 50px;">${headacheDays}</td></tr>
+                <tr><td style="padding: 5px; width: 175px;">Total migraine days:</td><td style="padding: 5px; width: 50px;">${migraineDays}</td></tr>
+                <tr><td style="padding: 5px; width: 175px;">Total painkiller days:</td><td style="padding: 5px; width: 50px;">${painkillerDays}</td></tr>
                 </table>
-                <h2>Last 90 Days Detail:</h2>
+                <h2>Last 90 Days Diary:</h2>
                 ${dtableHtml}
             `;
         }
