@@ -584,9 +584,9 @@
                             if (entry.medication) cellContent += 'x';
                         }
                         
-                        row += `<td style="padding: 5px; text-align: center; width: 100px;">${cellContent}</td>`;
+                        row += `<td style="width: 500px; padding: 5px; text-align: center;">${cellContent}</td>`;
                     } else {
-                        row += '<td style="padding: 5px; background-color: #f0f0f0; width: 100px"></td>';
+                        row += '<td style="width: 500px; padding: 5px; background-color: #f0f0f0;"></td>';
                     }
                 }
                 row += '</tr>';
@@ -602,7 +602,7 @@
                     <tr><td style="padding: 5px;">Total migraine days:</td><td style="padding: 5px;">${migraineDays}</td></tr>
                     <tr><td style="padding: 5px;">Total painkiller days:</td><td style="padding: 5px;">${painkillerDays}</td></tr>
                 </table>
-                <h2>Last 90 Days Detail:</h2>
+                <h2>Last 90 Days Diary:</h2>
                 ${dtableHtml}
             `;
         }
