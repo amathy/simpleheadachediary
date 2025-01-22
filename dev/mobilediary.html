@@ -558,8 +558,8 @@
                 currentDate.setMonth(currentDate.getMonth() - 1);
             }
 
-           // Generate the DTABLE
-           let dtableHtml = `
+          // Generate the DTABLE
+          let dtableHtml = `
                 <table border="1" style="margin-top: 20px; border-collapse: collapse; table-layout: fixed; width: 100%; font-size: 11px;">
                     <tr>
                         <th style="padding: 5px; width: 40px;">Month</th>
@@ -569,7 +569,7 @@
             months.forEach(month => {
                 const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
                 let row = `<tr>
-                    <td style="padding: 5px;">${monthNames[month.getMonth()]}</td>`;
+                    <td style="padding: 2px; text-align: center;">${monthNames[month.getMonth()]}</td>`;
                 
                 for (let day = 1; day <= 31; day++) {
                     if (day <= daysInMonth) {
@@ -593,7 +593,7 @@
                 dtableHtml += row;
             });
             dtableHtml += '</table>';
-
+            
             return `
                 <h1>Headache Diary Summary on ${today.toLocaleDateString()}</h1>
                 <h2>Last 30 Day Summary:</h2>
