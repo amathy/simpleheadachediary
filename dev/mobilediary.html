@@ -560,10 +560,10 @@
 
             // Generate the DTABLE
             let dtableHtml = `
-                <table border="1" style="margin-top: 20px; border-collapse: collapse; table-layout: fixed;">
+                <table border="1" style="margin-top: 20px; border-collapse: collapse; table-layout: fixed; width: 100%; font-size: 11px;">
                     <tr>
-                        <th style="padding: 5px;">Month</th>
-                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 5px; width: 200px">${i + 1}</th>`).join('')}
+                        <th style="padding: 5px; width: 80px;">Month</th>
+                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 2px; width: 25px; height: 25px;">${i + 1}</th>`).join('')}
                     </tr>`;
 
             months.forEach(month => {
@@ -584,9 +584,9 @@
                             if (entry.medication) cellContent += 'x';
                         }
                         
-                        row += `<td style="width: 500px; padding: 5px; text-align: center;">${cellContent}</td>`;
+                        row += `<td style="padding: 2px; text-align: center; width: 25px; height: 25px; vertical-align: middle;">${cellContent}</td>`;
                     } else {
-                        row += '<td style="width: 500px; padding: 5px; background-color: #f0f0f0;"></td>';
+                        row += '<td style="padding: 2px; background-color: #f0f0f0; width: 25px; height: 25px;"></td>';
                     }
                 }
                 row += '</tr>';
