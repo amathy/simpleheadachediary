@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headache Diary</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9fafb;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .header {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        h1 {
+            color: #111827;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.2rem;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .primary-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary-button {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            margin-right: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        .disclaimer {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .disclaimer-title {
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .button-group {
+            margin-top: 30px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Headache Diary</h1>
+        <p class="subtitle">Track your headaches and migraines simply and securely</p>
+    </div>
+
+    <div class="button-container">
+        <button class="primary-button" onclick="document.getElementById('dataPolicy').style.display='block'">
+            Open Headache Diary
+        </button>
+    </div>
+
+    <div class="disclaimer">
+        <h3 class="disclaimer-title">Disclaimer</h3>
+        <ul>
+            <li>This app is offered as is, we do not offer customer service for it</li>
+        </ul>
+    </div>
+
+    <div id="dataPolicy" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Data Policy</h2>
+            <ul>
+                <li>This app will store data locally on your computer and not on a server</li>
+                <li>The data stored will be diary entries containing whether you had a headache or migraine on that day, how severe it was, and whether you took a painkiller or triptan</li>
+                <li>The stored data is unencrypted</li>
+                <li>The app does not store any personally identifiable data anywhere</li>
+                <li>You can delete the data at any time by pressing the delete button</li>
+            </ul>
+            <div class="button-group">
+                <button class="secondary-button" onclick="document.getElementById('dataPolicy').style.display='none'">
+                    Cancel
+                </button>
+                <button class="primary-button" onclick="window.location.href='diary.html'">
+                    Go to Diary
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            let modal = document.getElementById('dataPolicy');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

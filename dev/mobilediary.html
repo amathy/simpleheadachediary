@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headache Diary</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #E6F3FF;  /* Light blue background */
+            color: #4A5568;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 10px;
+            margin: 0 auto;
+        }
+
+        .title {
+            text-align: center;
+            padding: 10px;
+            background-color: #B3D9FF;  /* Darker blue matching nav */
+            color: #4A5568;
+            margin-bottom: 10px;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            background-color: #B3D9FF;  /* Darker blue */
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            z-index: 100;
+        }
+
+        .year-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-year {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: 2px solid #D8BFD8;
+            border-radius: 20px;
+            background-color: #E6E6FA;
+            color: #4A5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #D8BFD8;
+            transform: translateY(-1px);
+        }
+
+        .button-pressed {
+            background-color: #D8BFD8;
+            border-color: #4A5568;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(1px);
+        }
+
+        .month-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .month-title {
+            background-color: #B3D9FF;  /* Darker blue */
+            padding: 5px;
+            text-align: center;
+            color: #4A5568;
+        }
+
+        .diary-cell {
+            width: calc(100% / 7);
+            height: 100px;
+            border: 1px solid #B3D9FF;
+            background-color: #E6F3FF;  /* Light blue matching body */
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .diary-cell.today {
+            background-color: #E6E6FA;
+        }
+
+        .cell-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .date {
+            color: #4A5568;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: left;
+            flex: 0 0 auto;
+            margin-bottom: 5px;
+        }
+
+        .entry-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .entry-type, .severity, .medication {
+            text-align: center;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #E6F3FF;  /* Light blue matching body */
+            margin: 15% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .modal-row {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .close {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 32px;
+            height: 32px;
+            background-color: #E6E6FA;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #D8BFD8;
+            transition: all 0.2s ease;
+        }
+
+        .close:hover {
+            background-color: #D8BFD8;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            .diary-cell {
+                height: 80px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Headache Diary</h1>
+        
+        <div class="navbar">
+            <div class="year-nav">
+                <button onclick="changeYear(-1)">&lt;&lt;</button>
+                <span class="current-year"></span>
+                <button onclick="changeYear(1)">&gt;&gt;</button>
+            </div>
+            <div>
+                <button onclick="shareDiary()">Share</button>
+                <button onclick="showDeleteModal()">Delete Data</button>
+            </div>
+        </div>
+
+        <div id="diary-content"></div>
+    </div>
+
+    <!-- Cell Change Modal -->
+    <div id="cellModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('cellModal')">&times;</span>
+            <h2 id="modalDate"></h2>
+            
+            <div class="modal-row">
+                <label>Did you have a:</label>
+                <div class="modal-buttons">
+                    <button onclick="toggleHeadacheType('M')">Migraine</button>
+                    <button onclick="toggleHeadacheType('H')">Headache</button>
+                </div>
+            </div>
+            
+            <div class="modal-row">
+                <label>Severity:</label>
+                <div class="modal-buttons">
+                    <button onclick="toggleSeverity('mild')">Mild</button>
+                    <button onclick="toggleSeverity('mod')">Moderate</button>
+                    <button onclick="toggleSeverity('sev')">Severe</button>
+                </div>
+            </div>
+            
+            <div class="modal-row">
+                <label>Treatment:</label>
+                <div class="modal-buttons">
+                    <button onclick="toggleMedication()">Did you take a painkiller or triptan?</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2>Warning</h2>
+            <p>This will delete your diary data</p>
+            <div class="modal-buttons">
+                <button onclick="deleteData()">Continue</button>
+                <button onclick="closeModal('deleteModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentYear = new Date().getFullYear();
+        let selectedDate = null;
+        let diaryData = JSON.parse(localStorage.getItem('headacheDiary')) || {};
+
+        function initializeDiary() {
+            document.querySelector('.current-year').textContent = currentYear;
+            renderDiary();
+            scrollToToday();
+        }
+
+        function renderDiary() {
+            const content = document.getElementById('diary-content');
+            content.innerHTML = '';
+            
+            const months = Array.from({length: 12}, (_, i) => {
+                return new Date(currentYear, i, 1);
+            });
+
+            months.forEach(month => {
+                content.appendChild(createMonthTable(month));
+            });
+        }
+
+        function createMonthTable(month) {
+            const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+
+            const table = document.createElement('table');
+            table.className = 'month-table';
+            
+            const caption = table.createCaption();
+            caption.className = 'month-title';
+            caption.textContent = monthNames[month.getMonth()];
+
+            let currentRow;
+            for (let day = 1; day <= daysInMonth; day++) {
+                if (day % 7 === 1) {
+                    currentRow = table.insertRow();
+                }
+
+                const cell = currentRow.insertCell();
+                cell.className = 'diary-cell';
+                
+                const date = new Date(month.getFullYear(), month.getMonth(), day);
+                const dateString = date.toISOString().split('T')[0];
+                
+                if (isToday(date)) {
+                    cell.classList.add('today');
+                }
+
+                cell.innerHTML = `
+                    <div class="cell-container">
+                        <div class="date">${day}</div>
+                        <div class="entry-content">
+                            <div class="entry-type">${diaryData[dateString]?.type || ''}</div>
+                            <div class="severity">${diaryData[dateString]?.severity || ''}</div>
+                            <div class="medication">${diaryData[dateString]?.medication ? 'x' : ''}</div>
+                        </div>
+                    </div>
+                `;
+
+                cell.onclick = () => openCellModal(dateString);
+            }
+
+            return table;
+        }
+
+        function isToday(date) {
+            const today = new Date();
+            return date.getDate() === today.getDate() &&
+                   date.getMonth() === today.getMonth() &&
+                   date.getFullYear() === today.getFullYear();
+        }
+
+        function openCellModal(date) {
+            selectedDate = date;
+            document.getElementById('modalDate').textContent = new Date(date).toLocaleDateString();
+            document.getElementById('cellModal').style.display = 'block';
+            
+            // Get all buttons in each row
+            const typeButtons = document.querySelectorAll('#cellModal .modal-row:nth-of-type(1) button');
+            const severityButtons = document.querySelectorAll('#cellModal .modal-row:nth-of-type(2) button');
+            const medicationButton = document.querySelector('#cellModal .modal-row:nth-of-type(3) button');
+            
+            // Reset all buttons
+            typeButtons.forEach(btn => btn.classList.remove('button-pressed'));
+            severityButtons.forEach(btn => btn.classList.remove('button-pressed'));
+            medicationButton.classList.remove('button-pressed');
+            
+            // If we have data for this date, set the appropriate buttons
+            if (diaryData[date]) {
+                const data = diaryData[date];
+                
+                // Set headache type button
+                if (data.type === 'M') typeButtons[0].classList.add('button-pressed');
+                if (data.type === 'H') typeButtons[1].classList.add('button-pressed');
+                
+                // Set severity button
+                if (data.severity === 'mild') severityButtons[0].classList.add('button-pressed');
+                if (data.severity === 'mod') severityButtons[1].classList.add('button-pressed');
+                if (data.severity === 'sev') severityButtons[2].classList.add('button-pressed');
+                
+                // Set medication button
+                if (data.medication) medicationButton.classList.add('button-pressed');
+            }
+        }
+
+        function toggleHeadacheType(type) {
+            if (!selectedDate) return;
+            
+            diaryData[selectedDate] = diaryData[selectedDate] || {};
+            
+            // Get both headache type buttons
+            const migraineBtn = document.querySelector('#cellModal button:nth-of-type(1)');
+            const headacheBtn = document.querySelector('#cellModal button:nth-of-type(2)');
+            
+            if (diaryData[selectedDate].type === type) {
+                // If same button clicked, remove type and unpress button
+                diaryData[selectedDate].type = '';
+                if (type === 'M') migraineBtn.classList.remove('button-pressed');
+                if (type === 'H') headacheBtn.classList.remove('button-pressed');
+            } else {
+                // If different button clicked, set type and update button states
+                diaryData[selectedDate].type = type;
+                migraineBtn.classList.toggle('button-pressed', type === 'M');
+                headacheBtn.classList.toggle('button-pressed', type === 'H');
+            }
+            
+            saveAndUpdate();
+        }
+
+        function toggleSeverity(severity) {
+            if (!selectedDate) return;
+            
+            diaryData[selectedDate] = diaryData[selectedDate] || {};
+            
+            // Get all severity buttons
+            const mildBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mild\')"]');
+            const modBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'mod\')"]');
+            const sevBtn = document.querySelector('#cellModal button[onclick="toggleSeverity(\'sev\')"]');
+            
+            if (diaryData[selectedDate].severity === severity) {
+                // If same button clicked, remove severity and unpress button
+                diaryData[selectedDate].severity = '';
+                mildBtn.classList.remove('button-pressed');
+                modBtn.classList.remove('button-pressed');
+                sevBtn.classList.remove('button-pressed');
+            } else {
+                // If different button clicked, set severity and update button states
+                diaryData[selectedDate].severity = severity;
+                mildBtn.classList.toggle('button-pressed', severity === 'mild');
+                modBtn.classList.toggle('button-pressed', severity === 'mod');
+                sevBtn.classList.toggle('button-pressed', severity === 'sev');
+            }
+            
+            saveAndUpdate();
+        }
+
+        function toggleMedication() {
+            if (!selectedDate) return;
+            
+            diaryData[selectedDate] = diaryData[selectedDate] || {};
+            diaryData[selectedDate].medication = !diaryData[selectedDate].medication;
+            
+            // Toggle medication button state
+            const medButton = document.querySelector('#cellModal .modal-row:last-of-type button');
+            medButton.classList.toggle('button-pressed', diaryData[selectedDate].medication);
+            
+            saveAndUpdate();
+        }
+
+        function saveAndUpdate() {
+            localStorage.setItem('headacheDiary', JSON.stringify(diaryData));
+            renderDiary();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            selectedDate = null;
+        }
+
+        function changeYear(delta) {
+            currentYear += delta;
+            document.querySelector('.current-year').textContent = currentYear;
+            renderDiary();
+        }
+
+        function showDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function deleteData() {
+            localStorage.removeItem('headacheDiary');
+            diaryData = {};
+            location.reload();
+        }
+
+        function scrollToToday() {
+            const today = document.querySelector('.today');
+            if (today) {
+                today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        async function shareDiary() {
+            const report = generateDiaryReport();
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Headache Diary Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; }
+                        table { border-collapse: collapse; width: 100%; max-width: 800px; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        h1, h2 { color: #333; }
+                    </style>
+                </head>
+                <body>
+                    ${report}
+                </body>
+                </html>`;
+            
+            // Create a Blob containing the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            
+            try {
+                // Try native sharing first
+                if (navigator.canShare && navigator.canShare({ files: [new File([blob], 'report.html', { type: 'text/html' })] })) {
+                    await navigator.share({
+                        files: [new File([blob], 'report.html', { type: 'text/html' })],
+                        title: 'Headache Diary Report',
+                    });
+                } else {
+                    // Fallback to creating a downloadable file
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'headache-diary-report.html';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            } catch (err) {
+                console.error('Sharing failed:', err);
+                alert('Unable to share diary report. Creating downloadable file instead.');
+                // Fallback to creating a downloadable file
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'headache-diary-report.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function generateDiaryReport() {
+            const today = new Date();
+            const last30Days = new Date(today);
+            last30Days.setDate(today.getDate() - 30);
+            
+            let headacheDays = 0;
+            let migraineDays = 0;
+            let painkillerDays = 0;
+
+            // Count totals for last 30 days
+            for (let date in diaryData) {
+                const entryDate = new Date(date);
+                if (entryDate >= last30Days && entryDate <= today) {
+                    const entry = diaryData[date];
+                    if (entry.type === 'H' || entry.type === 'M') headacheDays++;
+                    if (entry.type === 'M') migraineDays++;
+                    if (entry.medication) painkillerDays++;
+                }
+            }
+
+            // Generate the last 90 days table
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            // Get the last 4 calendar months
+            let months = [];
+            let currentDate = new Date(today);
+            for (let i = 0; i < 4; i++) {
+                months.unshift(new Date(currentDate));
+                currentDate.setMonth(currentDate.getMonth() - 1);
+            }
+
+            // Generate the DTABLE
+            let dtableHtml = `
+                <table border="1" style="margin-top: 20px; border-collapse: collapse;">
+                    <tr>
+                        <th style="padding: 5px;">Month</th>
+                        ${Array.from({length: 31}, (_, i) => `<th style="padding: 5px;">${i + 1}</th>`).join('')}
+                    </tr>`;
+
+            months.forEach(month => {
+                const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+                let row = `<tr>
+                    <td style="padding: 5px;">${monthNames[month.getMonth()]}</td>`;
+                
+                for (let day = 1; day <= 31; day++) {
+                    if (day <= daysInMonth) {
+                        const date = new Date(month.getFullYear(), month.getMonth(), day);
+                        const dateString = date.toISOString().split('T')[0];
+                        const entry = diaryData[dateString] || {};
+                        
+                        let cellContent = '';
+                        if (entry.type) {
+                            cellContent += `${entry.type}<br>`;
+                            if (entry.severity) cellContent += `${entry.severity}<br>`;
+                            if (entry.medication) cellContent += 'x';
+                        }
+                        
+                        row += `<td style="padding: 5px; text-align: center;">${cellContent}</td>`;
+                    } else {
+                        row += '<td style="padding: 5px; background-color: #f0f0f0;"></td>';
+                    }
+                }
+                row += '</tr>';
+                dtableHtml += row;
+            });
+            dtableHtml += '</table>';
+
+            return `
+                <h1>Headache Diary Summary on ${today.toLocaleDateString()}</h1>
+                <h2>Last 30 Day Summary:</h2>
+                <table style="margin-bottom: 20px; border-collapse: collapse;" border="1">
+                    <tr><td style="padding: 5px;">Total headache days:</td><td style="padding: 5px;">${headacheDays}</td></tr>
+                    <tr><td style="padding: 5px;">Total migraine days:</td><td style="padding: 5px;">${migraineDays}</td></tr>
+                    <tr><td style="padding: 5px;">Total painkiller days:</td><td style="padding: 5px;">${painkillerDays}</td></tr>
+                </table>
+                <h2>Last 90 Days Detail:</h2>
+                ${dtableHtml}
+            `;
+        }
+
+        // Helper function for button selection
+        HTMLElement.prototype.contains = function(text) {
+            return this.textContent.includes(text);
+        };
+
+        // Initialize the diary
+        initializeDiary();
+
+        // Handle modal closing when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+                selectedDate = null;
+            }
+        }
+    </script>
+</body>
+</html>

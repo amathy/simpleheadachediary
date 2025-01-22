@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Redirect</title>
+</head>
+<body>
+    <script>
+        function isMobileDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'opera mini', 'blackberry'];
+            const isMobileUA = mobileKeywords.some(keyword => userAgent.includes(keyword));
+            const isMobileScreen = window.innerWidth <= 768;
+            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            return isMobileUA || (hasTouch && isMobileScreen);
+        }
+
+        window.location.href = isMobileDevice() ? 'mobilediary.html' : 'desktopdiary.html';
+    </script>
+</body>
+</html>
